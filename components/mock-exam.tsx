@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   trueFalseQuestions,
   choiceQuestions,
@@ -8,12 +8,12 @@ import {
   type TrueFalseQuestion,
   type ChoiceQuestion,
   type ShortAnswerQuestion,
-} from "@/lib/os-questions"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { cn } from "@/lib/utils"
+} from "@/lib/os-questions";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 import {
   Clock,
   Play,
@@ -23,107 +23,108 @@ import {
   AlertTriangle,
   Trophy,
   Shuffle,
-} from "lucide-react"
+} from "lucide-react";
 
-// Exam blueprint — matches the real final: 10 T/F, 20 MC, 20 Short Answer.
-const TF_COUNT = 10
-const MC_COUNT = 20
-const SA_COUNT = 20
-const EXAM_MINUTES = 90
+const TF_COUNT = 10;
+const MC_COUNT = 20;
+const SA_COUNT = 20;
+const EXAM_MINUTES = 90;
 
-type TFItem = { kind: "tf"; q: TrueFalseQuestion }
-type MCItem = { kind: "mc"; q: ChoiceQuestion }
-type SAItem = { kind: "sa"; q: ShortAnswerQuestion }
-type ExamItem = TFItem | MCItem | SAItem
+type TFItem = { kind: "tf"; q: TrueFalseQuestion };
+type MCItem = { kind: "mc"; q: ChoiceQuestion };
+type SAItem = { kind: "sa"; q: ShortAnswerQuestion };
+type ExamItem = TFItem | MCItem | SAItem;
 
 function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr]
+  const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
-  return a
+  return a;
 }
 
 function buildExam(): ExamItem[] {
   const tf: ExamItem[] = shuffle(trueFalseQuestions)
     .slice(0, TF_COUNT)
-    .map((q) => ({ kind: "tf", q }))
+    .map((q) => ({ kind: "tf", q }));
   const mc: ExamItem[] = shuffle(choiceQuestions)
     .slice(0, MC_COUNT)
-    .map((q) => ({ kind: "mc", q }))
+    .map((q) => ({ kind: "mc", q }));
   const sa: ExamItem[] = shuffle(shortAnswerQuestions)
     .slice(0, SA_COUNT)
-    .map((q) => ({ kind: "sa", q }))
+    .map((q) => ({ kind: "sa", q }));
   // Keep sections grouped (like a real paper) but randomize within each section.
-  return [...tf, ...mc, ...sa]
+  return [...tf, ...mc, ...sa];
 }
 
 function formatTime(secs: number): string {
-  const m = Math.floor(secs / 60)
-  const s = secs % 60
-  return `${m}:${s.toString().padStart(2, "0")}`
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-type Phase = "intro" | "active" | "results"
+type Phase = "intro" | "active" | "results";
 
 export function MockExam() {
-  const [phase, setPhase] = useState<Phase>("intro")
-  const [items, setItems] = useState<ExamItem[]>([])
-  const [tfAnswers, setTfAnswers] = useState<Record<string, boolean>>({})
-  const [mcAnswers, setMcAnswers] = useState<Record<string, number>>({})
-  const [saSelfGrade, setSaSelfGrade] = useState<Record<string, boolean>>({})
-  const [secondsLeft, setSecondsLeft] = useState(EXAM_MINUTES * 60)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [phase, setPhase] = useState<Phase>("intro");
+  const [items, setItems] = useState<ExamItem[]>([]);
+  const [tfAnswers, setTfAnswers] = useState<Record<string, boolean>>({});
+  const [mcAnswers, setMcAnswers] = useState<Record<string, number>>({});
+  const [saSelfGrade, setSaSelfGrade] = useState<Record<string, boolean>>({});
+  const [secondsLeft, setSecondsLeft] = useState(EXAM_MINUTES * 60);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const finishExam = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current)
-    timerRef.current = null
-    setPhase("results")
-  }, [])
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+    setPhase("results");
+  }, []);
 
-  // Countdown timer
+  // countdown timer
   useEffect(() => {
-    if (phase !== "active") return
+    if (phase !== "active") return;
     timerRef.current = setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
-          finishExam()
-          return 0
+          finishExam();
+          return 0;
         }
-        return prev - 1
-      })
-    }, 1000)
+        return prev - 1;
+      });
+    }, 1000);
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [phase, finishExam])
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [phase, finishExam]);
 
   function startExam() {
-    setItems(buildExam())
-    setTfAnswers({})
-    setMcAnswers({})
-    setSaSelfGrade({})
-    setSecondsLeft(EXAM_MINUTES * 60)
-    setPhase("active")
+    setItems(buildExam());
+    setTfAnswers({});
+    setMcAnswers({});
+    setSaSelfGrade({});
+    setSecondsLeft(EXAM_MINUTES * 60);
+    setPhase("active");
   }
 
-  const tfItems = items.filter((i): i is TFItem => i.kind === "tf")
-  const mcItems = items.filter((i): i is MCItem => i.kind === "mc")
-  const saItems = items.filter((i): i is SAItem => i.kind === "sa")
+  const tfItems = items.filter((i): i is TFItem => i.kind === "tf");
+  const mcItems = items.filter((i): i is MCItem => i.kind === "mc");
+  const saItems = items.filter((i): i is SAItem => i.kind === "sa");
 
-  const objectiveTotal = tfItems.length + mcItems.length
+  const objectiveTotal = tfItems.length + mcItems.length;
   const objectiveAnswered =
-    Object.keys(tfAnswers).length + Object.keys(mcAnswers).length
+    Object.keys(tfAnswers).length + Object.keys(mcAnswers).length;
 
-  const tfCorrect = tfItems.filter((i) => tfAnswers[i.q.id] === i.q.answer).length
+  const tfCorrect = tfItems.filter(
+    (i) => tfAnswers[i.q.id] === i.q.answer,
+  ).length;
   const mcCorrect = mcItems.filter(
     (i) => mcAnswers[i.q.id] === i.q.answerIndex,
-  ).length
-  const saCorrect = saItems.filter((i) => saSelfGrade[i.q.id]).length
+  ).length;
+  const saCorrect = saItems.filter((i) => saSelfGrade[i.q.id]).length;
 
   if (phase === "intro") {
-    return <ExamIntro onStart={startExam} />
+    return <ExamIntro onStart={startExam} />;
   }
 
   if (phase === "results") {
@@ -142,15 +143,15 @@ export function MockExam() {
         onRestart={startExam}
         onExit={() => setPhase("intro")}
       />
-    )
+    );
   }
 
-  const lowTime = secondsLeft <= 300
-  let counter = 0
+  const lowTime = secondsLeft <= 300;
+  let counter = 0;
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Sticky exam status bar */}
+      {/* sticky exam status bar */}
       <div className="sticky top-0 z-10 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-lg sm:border sm:px-5">
         <div className="flex items-center gap-2">
           <span
@@ -181,7 +182,7 @@ export function MockExam() {
         </div>
       </div>
 
-      {/* Section 1: True / False */}
+      {/* section 1 True / False */}
       <SectionHeading
         number="Section A"
         title="True / False"
@@ -189,9 +190,9 @@ export function MockExam() {
       />
       <div className="flex flex-col gap-4">
         {tfItems.map((item) => {
-          counter += 1
-          const num = counter
-          const selected = tfAnswers[item.q.id]
+          counter += 1;
+          const num = counter;
+          const selected = tfAnswers[item.q.id];
           return (
             <Card key={item.q.id}>
               <CardHeader className="gap-2">
@@ -221,11 +222,11 @@ export function MockExam() {
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
-      {/* Section 2: Multiple Choice */}
+      {/* section 2 Multiple Choice */}
       <SectionHeading
         number="Section B"
         title="Multiple Choice"
@@ -233,10 +234,10 @@ export function MockExam() {
       />
       <div className="flex flex-col gap-4">
         {mcItems.map((item) => {
-          counter += 1
-          const num = counter
-          const selected = mcAnswers[item.q.id]
-          const letters = ["A", "B", "C", "D", "E"]
+          counter += 1;
+          const num = counter;
+          const selected = mcAnswers[item.q.id];
+          const letters = ["A", "B", "C", "D", "E"];
           return (
             <Card key={item.q.id}>
               <CardHeader className="gap-2">
@@ -274,11 +275,11 @@ export function MockExam() {
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
-      {/* Section 3: Short Answer */}
+      {/* section 3 Short Answer */}
       <SectionHeading
         number="Section C"
         title="Short Answer"
@@ -286,8 +287,8 @@ export function MockExam() {
       />
       <div className="flex flex-col gap-4">
         {saItems.map((item) => {
-          counter += 1
-          const num = counter
+          counter += 1;
+          const num = counter;
           return (
             <Card key={item.q.id}>
               <CardHeader className="gap-2">
@@ -304,7 +305,7 @@ export function MockExam() {
                 />
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
@@ -318,13 +319,13 @@ export function MockExam() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
 
 function ExamIntro({ onStart }: { onStart: () => void }) {
-  const tfAvail = trueFalseQuestions.length
-  const mcAvail = choiceQuestions.length
-  const saAvail = shortAnswerQuestions.length
+  const tfAvail = trueFalseQuestions.length;
+  const mcAvail = choiceQuestions.length;
+  const saAvail = shortAnswerQuestions.length;
   return (
     <Card className="overflow-hidden">
       <CardHeader className="gap-3">
@@ -342,7 +343,11 @@ function ExamIntro({ onStart }: { onStart: () => void }) {
       </CardHeader>
       <CardContent className="flex flex-col gap-5">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Stat label="Duration" value={`${EXAM_MINUTES} min`} icon={<Clock className="size-4" />} />
+          <Stat
+            label="Duration"
+            value={`${EXAM_MINUTES} min`}
+            icon={<Clock className="size-4" />}
+          />
           <Stat label="True/False" value={`${TF_COUNT}`} />
           <Stat label="Multiple Choice" value={`${MC_COUNT}`} />
           <Stat label="Short Answer" value={`${SA_COUNT}`} />
@@ -350,12 +355,14 @@ function ExamIntro({ onStart }: { onStart: () => void }) {
         <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
           <li className="flex items-start gap-2">
             <Shuffle className="mt-0.5 size-4 shrink-0 text-primary" />
-            Questions are randomly drawn and shuffled from a bank of {tfAvail}{" "}
+            Questions are randomly drawn and shuffled from a bank of {
+              tfAvail
+            }{" "}
             T/F, {mcAvail} MCQ, and {saAvail} short-answer questions.
           </li>
           <li className="flex items-start gap-2">
-            <Clock className="mt-0.5 size-4 shrink-0 text-primary" />
-            A {EXAM_MINUTES}-minute countdown auto-submits when it reaches zero.
+            <Clock className="mt-0.5 size-4 shrink-0 text-primary" />A{" "}
+            {EXAM_MINUTES}-minute countdown auto-submits when it reaches zero.
           </li>
           <li className="flex items-start gap-2">
             <Check className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -369,7 +376,7 @@ function ExamIntro({ onStart }: { onStart: () => void }) {
         </Button>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function ExamResults({
@@ -386,28 +393,28 @@ function ExamResults({
   onRestart,
   onExit,
 }: {
-  tfItems: TFItem[]
-  mcItems: MCItem[]
-  saItems: SAItem[]
-  tfAnswers: Record<string, boolean>
-  mcAnswers: Record<string, number>
-  saSelfGrade: Record<string, boolean>
-  tfCorrect: number
-  mcCorrect: number
-  saCorrect: number
-  timeUsed: number
-  onRestart: () => void
-  onExit: () => void
+  tfItems: TFItem[];
+  mcItems: MCItem[];
+  saItems: SAItem[];
+  tfAnswers: Record<string, boolean>;
+  mcAnswers: Record<string, number>;
+  saSelfGrade: Record<string, boolean>;
+  tfCorrect: number;
+  mcCorrect: number;
+  saCorrect: number;
+  timeUsed: number;
+  onRestart: () => void;
+  onExit: () => void;
 }) {
-  const [saGrade, setSaGrade] = useState<Record<string, boolean>>(saSelfGrade)
+  const [saGrade, setSaGrade] = useState<Record<string, boolean>>(saSelfGrade);
 
-  const objectiveTotal = tfItems.length + mcItems.length
-  const objectiveScore = tfCorrect + mcCorrect
-  const saGradedCorrect = saItems.filter((i) => saGrade[i.q.id]).length
-  const totalPossible = tfItems.length + mcItems.length + saItems.length
-  const totalScore = objectiveScore + saGradedCorrect
-  const pct = Math.round((totalScore / totalPossible) * 100)
-  const letters = ["A", "B", "C", "D", "E"]
+  const objectiveTotal = tfItems.length + mcItems.length;
+  const objectiveScore = tfCorrect + mcCorrect;
+  const saGradedCorrect = saItems.filter((i) => saGrade[i.q.id]).length;
+  const totalPossible = tfItems.length + mcItems.length + saItems.length;
+  const totalScore = objectiveScore + saGradedCorrect;
+  const pct = Math.round((totalScore / totalPossible) * 100);
+  const letters = ["A", "B", "C", "D", "E"];
 
   return (
     <div className="flex flex-col gap-6">
@@ -460,13 +467,13 @@ function ExamResults({
         </CardContent>
       </Card>
 
-      {/* Review: True / False */}
+      {/* review True / False */}
       <SectionHeading number="Review A" title="True / False" meta="" />
       <div className="flex flex-col gap-4">
         {tfItems.map((item, idx) => {
-          const chosen = tfAnswers[item.q.id]
-          const correct = chosen === item.q.answer
-          const answered = chosen !== undefined
+          const chosen = tfAnswers[item.q.id];
+          const correct = chosen === item.q.answer;
+          const answered = chosen !== undefined;
           return (
             <ReviewCard
               key={item.q.id}
@@ -480,17 +487,17 @@ function ExamResults({
               correctAnswer={item.q.answer ? "True" : "False"}
               explanation={item.q.explanation}
             />
-          )
+          );
         })}
       </div>
 
-      {/* Review: Multiple Choice */}
+      {/* review multiple choice */}
       <SectionHeading number="Review B" title="Multiple Choice" meta="" />
       <div className="flex flex-col gap-4">
         {mcItems.map((item, idx) => {
-          const chosen = mcAnswers[item.q.id]
-          const answered = chosen !== undefined
-          const correct = chosen === item.q.answerIndex
+          const chosen = mcAnswers[item.q.id];
+          const answered = chosen !== undefined;
+          const correct = chosen === item.q.answerIndex;
           return (
             <ReviewCard
               key={item.q.id}
@@ -510,11 +517,11 @@ function ExamResults({
               }`}
               explanation={item.q.explanation}
             />
-          )
+          );
         })}
       </div>
 
-      {/* Review: Short Answer — self grade */}
+      {/* review short answer  self grade */}
       <SectionHeading
         number="Review C"
         title="Short Answer (self-grade)"
@@ -522,7 +529,7 @@ function ExamResults({
       />
       <div className="flex flex-col gap-4">
         {saItems.map((item, idx) => {
-          const graded = saGrade[item.q.id]
+          const graded = saGrade[item.q.id];
           return (
             <Card key={item.q.id}>
               <CardHeader className="gap-2">
@@ -571,11 +578,11 @@ function ExamResults({
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
 
 function SectionHeading({
@@ -583,9 +590,9 @@ function SectionHeading({
   title,
   meta,
 }: {
-  number: string
-  title: string
-  meta: string
+  number: string;
+  title: string;
+  meta: string;
 }) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-2 border-b pb-2">
@@ -597,7 +604,7 @@ function SectionHeading({
       </div>
       {meta && <span className="text-xs text-muted-foreground">{meta}</span>}
     </div>
-  )
+  );
 }
 
 function QuestionMeta({
@@ -605,9 +612,9 @@ function QuestionMeta({
   unit,
   type,
 }: {
-  num: number
-  unit: number
-  type: string
+  num: number;
+  unit: number;
+  type: string;
 }) {
   return (
     <div className="flex items-center gap-2">
@@ -621,7 +628,7 @@ function QuestionMeta({
         {type}
       </Badge>
     </div>
-  )
+  );
 }
 
 function Stat({
@@ -629,9 +636,9 @@ function Stat({
   value,
   icon,
 }: {
-  label: string
-  value: string
-  icon?: React.ReactNode
+  label: string;
+  value: string;
+  icon?: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-1 rounded-md border bg-secondary/40 p-3">
@@ -641,7 +648,7 @@ function Stat({
       </span>
       <span className="text-xs text-muted-foreground">{label}</span>
     </div>
-  )
+  );
 }
 
 function ScoreCard({
@@ -649,9 +656,9 @@ function ScoreCard({
   correct,
   total,
 }: {
-  label: string
-  correct: number
-  total: number
+  label: string;
+  correct: number;
+  total: number;
 }) {
   return (
     <div className="flex flex-col gap-1 rounded-md border bg-card p-4">
@@ -660,7 +667,7 @@ function ScoreCard({
         {correct} / {total}
       </span>
     </div>
-  )
+  );
 }
 
 function ReviewCard({
@@ -674,15 +681,15 @@ function ReviewCard({
   correctAnswer,
   explanation,
 }: {
-  num: number
-  unit: number
-  type: string
-  prompt: string
-  correct: boolean
-  answered: boolean
-  yourAnswer: string
-  correctAnswer: string
-  explanation: string
+  num: number;
+  unit: number;
+  type: string;
+  prompt: string;
+  correct: boolean;
+  answered: boolean;
+  yourAnswer: string;
+  correctAnswer: string;
+  explanation: string;
 }) {
   return (
     <Card
@@ -727,5 +734,5 @@ function ReviewCard({
         <p className="text-muted-foreground leading-relaxed">{explanation}</p>
       </CardContent>
     </Card>
-  )
+  );
 }
