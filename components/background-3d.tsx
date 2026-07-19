@@ -1,35 +1,38 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo, useRef, useState } from "react"
-import { Canvas, useFrame } from "@react-three/fiber"
-import { Float, Icosahedron, Torus, Octahedron, Dodecahedron } from "@react-three/drei"
-import { useTheme } from "next-themes"
-import type { Group, Mesh } from "three"
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import {
+  Float,
+  Icosahedron,
+  Torus,
+  Octahedron,
+  Dodecahedron,
+} from "@react-three/drei";
+import { useTheme } from "next-themes";
+import type { Group, Mesh } from "three";
+const PALETTE = ["#3b6fd6", "#1fae8a", "#e08a2b", "#9b6bd6", "#e0533b"];
 
-// Accent colors that echo the app's per-section palette
-const PALETTE = ["#3b6fd6", "#1fae8a", "#e08a2b", "#9b6bd6", "#e0533b"]
-
-type ShapeKind = "ico" | "torus" | "octa" | "dodeca"
+type ShapeKind = "ico" | "torus" | "octa" | "dodeca";
 
 interface ShapeConfig {
-  kind: ShapeKind
-  position: [number, number, number]
-  scale: number
-  color: string
-  rotationSpeed: number
-  floatSpeed: number
-  floatIntensity: number
+  kind: ShapeKind;
+  position: [number, number, number];
+  scale: number;
+  color: string;
+  rotationSpeed: number;
+  floatSpeed: number;
+  floatIntensity: number;
 }
 
 function makeShapes(): ShapeConfig[] {
-  // Deterministic layout so SSR/CSR match and the scene stays balanced
-  const kinds: ShapeKind[] = ["ico", "torus", "octa", "dodeca"]
-  const configs: ShapeConfig[] = []
-  const count = 16
+  const kinds: ShapeKind[] = ["ico", "torus", "octa", "dodeca"];
+  const configs: ShapeConfig[] = [];
+  const count = 16;
   for (let i = 0; i < count; i++) {
-    const t = i / count
-    const angle = t * Math.PI * 2 * 2.2
-    const radius = 4 + (i % 4) * 1.3
+    const t = i / count;
+    const angle = t * Math.PI * 2 * 2.2;
+    const radius = 4 + (i % 4) * 1.3;
     configs.push({
       kind: kinds[i % kinds.length],
       position: [
@@ -42,19 +45,19 @@ function makeShapes(): ShapeConfig[] {
       rotationSpeed: 0.08 + ((i % 3) + 1) * 0.05,
       floatSpeed: 1 + (i % 3) * 0.4,
       floatIntensity: 0.8 + (i % 3) * 0.5,
-    })
+    });
   }
-  return configs
+  return configs;
 }
 
 function Shape({ config, isDark }: { config: ShapeConfig; isDark: boolean }) {
-  const meshRef = useRef<Mesh>(null)
+  const meshRef = useRef<Mesh>(null);
 
   useFrame((_, delta) => {
-    if (!meshRef.current) return
-    meshRef.current.rotation.x += delta * config.rotationSpeed
-    meshRef.current.rotation.y += delta * config.rotationSpeed * 0.7
-  })
+    if (!meshRef.current) return;
+    meshRef.current.rotation.x += delta * config.rotationSpeed;
+    meshRef.current.rotation.y += delta * config.rotationSpeed * 0.7;
+  });
 
   const material = (
     <meshStandardMaterial
@@ -67,7 +70,7 @@ function Shape({ config, isDark }: { config: ShapeConfig; isDark: boolean }) {
       opacity={isDark ? 0.92 : 0.82}
       flatShading
     />
-  )
+  );
 
   return (
     <Float
@@ -98,20 +101,20 @@ function Shape({ config, isDark }: { config: ShapeConfig; isDark: boolean }) {
         )}
       </group>
     </Float>
-  )
+  );
 }
 
 function Scene({ isDark }: { isDark: boolean }) {
-  const groupRef = useRef<Group>(null)
-  const shapes = useMemo(() => makeShapes(), [])
+  const groupRef = useRef<Group>(null);
+  const shapes = useMemo(() => makeShapes(), []);
 
   // Gentle parallax drift of the whole field
   useFrame(({ clock }) => {
-    if (!groupRef.current) return
-    const t = clock.getElapsedTime()
-    groupRef.current.rotation.y = Math.sin(t * 0.05) * 0.15
-    groupRef.current.rotation.x = Math.cos(t * 0.04) * 0.08
-  })
+    if (!groupRef.current) return;
+    const t = clock.getElapsedTime();
+    groupRef.current.rotation.y = Math.sin(t * 0.05) * 0.15;
+    groupRef.current.rotation.x = Math.cos(t * 0.04) * 0.08;
+  });
 
   return (
     <>
@@ -128,25 +131,22 @@ function Scene({ isDark }: { isDark: boolean }) {
         ))}
       </group>
     </>
-  )
+  );
 }
 
 export function Background3D() {
-  const { resolvedTheme } = useTheme()
-  const isDark = resolvedTheme === "dark"
-  const [mounted, setMounted] = useState(false)
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
-  if (!mounted) return null
+  if (!mounted) return null;
 
   return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none fixed inset-0 -z-10"
-    >
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10">
       <Canvas
         camera={{ position: [0, 0, 9], fov: 55 }}
         dpr={[1, 1.5]}
@@ -155,8 +155,7 @@ export function Background3D() {
       >
         <Scene isDark={isDark} />
       </Canvas>
-      {/* Soft overlay to keep foreground text readable */}
       <div className="absolute inset-0 bg-background/25" />
     </div>
-  )
+  );
 }

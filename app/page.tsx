@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { NotesSection } from "@/components/notes-section"
-import { TrueFalseQuiz } from "@/components/true-false-quiz"
-import { MultipleChoiceQuiz } from "@/components/multiple-choice-quiz"
-import { ShortAnswerQuiz } from "@/components/short-answer-quiz"
-import { MockExam } from "@/components/mock-exam"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { Background3D } from "@/components/background-3d"
+import { useState } from "react";
+import { NotesSection } from "@/components/notes-section";
+import { TrueFalseQuiz } from "@/components/true-false-quiz";
+import { MultipleChoiceQuiz } from "@/components/multiple-choice-quiz";
+import { ShortAnswerQuiz } from "@/components/short-answer-quiz";
+import { MockExam } from "@/components/mock-exam";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Background3D } from "@/components/background-3d";
 import {
   BookOpen,
   CircleHelp,
@@ -16,7 +16,7 @@ import {
   Timer,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react"
+} from "lucide-react";
 
 const tabs = [
   {
@@ -49,34 +49,34 @@ const tabs = [
     icon: Timer,
     color: "var(--color-accent-exam)",
   },
-] as const
+] as const;
 
 export default function Page() {
-  const [activeTab, setActiveTab] = useState("notes")
-  const [sidebarMinimized, setSidebarMinimized] = useState(false)
+  const [activeTab, setActiveTab] = useState("notes");
+  const [sidebarMinimized, setSidebarMinimized] = useState(false);
 
   const renderContent = () => {
     switch (activeTab) {
       case "notes":
-        return <NotesSection />
+        return <NotesSection />;
       case "tf":
-        return <TrueFalseQuiz />
+        return <TrueFalseQuiz />;
       case "mc":
-        return <MultipleChoiceQuiz />
+        return <MultipleChoiceQuiz />;
       case "sa":
-        return <ShortAnswerQuiz />
+        return <ShortAnswerQuiz />;
       case "exam":
-        return <MockExam />
+        return <MockExam />;
       default:
-        return <NotesSection />
+        return <NotesSection />;
     }
-  }
+  };
 
   return (
     <div className="relative min-h-dvh w-full bg-background">
       <Background3D />
 
-      {/* Header */}
+      {/* header */}
       <header className="relative z-20 border-b bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
@@ -96,13 +96,16 @@ export default function Page() {
         </div>
       </header>
 
-      {/* Main Layout: Sidebar + Content */}
+      {/* main layout sidebar and content */}
       <main className="relative z-10 mx-auto flex max-w-7xl gap-4 px-4 py-8 sm:px-6 lg:px-8">
-        {/* Sidebar */}
-        <aside className={`flex-shrink-0 transition-all duration-300 ${sidebarMinimized ? "w-20" : "w-full max-w-xs"}`}>
+        {/* sidebar */}
+        <aside
+          className={`flex-shrink-0 transition-all duration-300 ${sidebarMinimized ? "w-20" : "w-full max-w-xs"}`}
+        >
           <div className="sticky top-8 space-y-3">
-            {/* Minimize Toggle Button */}
-            <div className={`flex ${sidebarMinimized ? "justify-center" : "justify-between"} items-center px-4 py-3`}>
+            <div
+              className={`flex ${sidebarMinimized ? "justify-center" : "justify-between"} items-center px-4 py-3`}
+            >
               {!sidebarMinimized && (
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                   Sections
@@ -121,10 +124,10 @@ export default function Page() {
               </button>
             </div>
 
-            {/* Navigation Buttons */}
+            {/* navigation buttons */}
             <nav className="space-y-2">
               {tabs.map((t) => {
-                const isActive = activeTab === t.value
+                const isActive = activeTab === t.value;
                 return (
                   <button
                     key={t.value}
@@ -139,7 +142,9 @@ export default function Page() {
                     }}
                     title={sidebarMinimized ? t.label : undefined}
                   >
-                    <div className={`flex ${sidebarMinimized ? "justify-center" : "items-center gap-3"}`}>
+                    <div
+                      className={`flex ${sidebarMinimized ? "justify-center" : "items-center gap-3"}`}
+                    >
                       <t.icon
                         className="size-5 flex-shrink-0 transition-transform"
                         style={{
@@ -151,7 +156,9 @@ export default function Page() {
                         <span
                           className="font-medium text-sm"
                           style={{
-                            color: isActive ? t.color : "var(--color-foreground)",
+                            color: isActive
+                              ? t.color
+                              : "var(--color-foreground)",
                           }}
                         >
                           {t.label}
@@ -165,13 +172,13 @@ export default function Page() {
                       />
                     )}
                   </button>
-                )
+                );
               })}
             </nav>
           </div>
         </aside>
 
-        {/* Content Area */}
+        {/* content area */}
         <div className="min-w-0 flex-1">
           <div className="rounded-xl border bg-card/80 p-6 backdrop-blur-md sm:p-8">
             {renderContent()}
@@ -179,13 +186,16 @@ export default function Page() {
         </div>
       </main>
 
-      {/* Footer */}
+      {/* footer */}
       <footer className="relative z-10 border-t bg-card/50 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-6 text-sm text-muted-foreground sm:grid-cols-3">
             <div>
               <p className="font-semibold text-foreground">Study Material</p>
-              <p className="mt-1">Comprehensive Operating Systems exam preparation covering 7 core units with integrated practice assessments.</p>
+              <p className="mt-1">
+                Comprehensive Operating Systems exam preparation covering 7 core
+                units with integrated practice assessments.
+              </p>
             </div>
             <div>
               <p className="font-semibold text-foreground">Features</p>
@@ -198,15 +208,23 @@ export default function Page() {
             </div>
             <div>
               <p className="font-semibold text-foreground">About</p>
-              <p className="mt-1">Developed by <span className="font-medium text-foreground">Yishak</span></p>
-              <p className="mt-2 text-xs">© {new Date().getFullYear()}. All rights reserved.</p>
+              <p className="mt-1">
+                Developed by{" "}
+                <span className="font-medium text-foreground">Yishak</span>
+              </p>
+              <p className="mt-2 text-xs">
+                © {new Date().getFullYear()}. All rights reserved.
+              </p>
             </div>
           </div>
           <div className="mt-6 border-t pt-4 text-center text-xs text-muted-foreground">
-            <p>This platform is designed to facilitate exam preparation. Review all course materials in conjunction with official study guides.</p>
+            <p>
+              This platform is designed to facilitate exam preparation. Review
+              all course materials in conjunction with official study guides.
+            </p>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
